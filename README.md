@@ -27,7 +27,7 @@ def rhs(t, u, du, p):
 
 funcptr = rhs.address # address to ODE function
 u0 = np.array([5.,0.8]) # Initial conditions
-data = np.array([1.0]) # data you want to pass to rhs
+data = np.array([1.0]) # data you want to pass to rhs (data == p in the rhs).
 t_eval = np.linspace(0.0,50.0,1000) # times to evaluate solution
 
 usol, success = lsoda(funcptr, u0, t_eval, data = data)
