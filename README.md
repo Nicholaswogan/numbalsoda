@@ -30,7 +30,7 @@ u0 = np.array([5.,0.8]) # Initial conditions
 data = np.array([1.0]) # data you want to pass to rhs
 t_eval = np.linspace(0.0,50.0,1000) # times to evaluate solution
 
-usol, success = lsoda(funcptr, u0, t_eval, data)
+usol, success = lsoda(funcptr, u0, t_eval, data = data)
 # usol = solution
 # success = True/False
 ```
@@ -54,7 +54,7 @@ Also, note `lsoda` can be called within a jit-compiled numba function (see below
 ```python
 @njit
 def test():
-    usol, success = lsoda(funcptr, u0, t_eval, data)
+    usol, success = lsoda(funcptr, u0, t_eval, data = data)
     return usol
 usol = test() # this works!
 

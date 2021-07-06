@@ -18,7 +18,7 @@ lsoda_wrapper.argtypes = [ct.c_void_p, ct.c_int, ct.c_void_p, ct.c_void_p,\
 lsoda_wrapper.restype = None
 
 @njit
-def lsoda(funcptr, u0, t_eval, data, rtol = 1.0e-3, atol = 1.0e-6):
+def lsoda(funcptr, u0, t_eval, data = np.array([0.0], np.float64), rtol = 1.0e-3, atol = 1.0e-6):
     neq = len(u0)
     nt = len(t_eval)
     usol = np.empty((nt,neq),dtype=np.float64)
