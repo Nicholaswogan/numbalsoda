@@ -1,8 +1,10 @@
 # Benchmarks
 
-This is a comparison NumbaLSODA, scipy.integrate.solveivp and Julia's DifferentialEquations.jl. I look at one non-stiff problem (lorenz) and one stiff problem (rober). Below are the results.
+This is a comparison `NumbaLSODA`, `scipy.integrate.solve_ivp` and Julia's DifferentialEquations.jl. I look at one non-stiff problem (lorenz) and one stiff problem (rober). Below are the results.
 
-For larger problems (more ODEs), there will be much smaller differences between NumbaLSODA and Scipy. Scipy will be faster for larger problems because relatively less time is spend setting up the problem in python (slow), and more time is spent within algorithms which are in some cases machine code (fast).
+For larger problems (more ODEs), there will be smaller differences between NumbaLSODA and Scipy because Scipy will spend relatively less time doing operations in python (which is slow), and will spend more time in optimized machine code (which is fast).
+
+Also, Scipy might be faster than NumbaLSODA for stiff problems with > ~500 ODEs because Scipy uses highly optimized BLAS and LAPACK routines for matrix inversion (intel MKL or OpenBLAS), while NumbaLSODA uses home-brewed and less optimized BLAS routines.
 
 ## Non-stiff (Lorenz)
 

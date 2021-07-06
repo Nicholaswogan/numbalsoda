@@ -2,7 +2,7 @@
 
 `NumbaLSODA` is a python wrapper to the LSODA method in [ODEPACK](https://computing.llnl.gov/projects/odepack), which is for solving ordinary differential equation initial value problems. LSODA was originally written in Fortran. `NumbaLSODA` is a wrapper to a C++ re-write of the original code: https://github.com/dilawar/libsoda 
 
-This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `NumbaLSODA` never invokes the python interpreter during integration, and can be used within a numba compiled function. 
+This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `NumbaLSODA` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `NumbaLSODA` a lot faster than scipy for most problems (see `benchmark` folder).
 
 ## Installation
 `NumbaLSODA` will probably only work on MacOS or Linux. You must have `CMake` and a C++ compiler. You must also have python >3.6.0 with `numpy` and `numba`.
@@ -35,7 +35,21 @@ usol, success = lsoda(funcptr, u0, t_eval, data)
 # success = True/False
 ```
 
-Note, that `lsoda` can be called within a jit-compiled numba function:
+The variables `u`, `du` and `p` in the `rhs` function are pointers to an array of floats. Therefore, operations like `np.sum(u)` or `len(u)` will not work. However, you can use the function `nb.carray()` to make a numpy array out of the pointers. For example:
+
+```python
+import numba as nb
+
+@cfunc(lsoda_sig)
+def rhs(t, u, du, p):
+    u_ = nb.carray(u, (2,))
+    p_ = nb.carray(p, (1,))
+    # ... rest of rhs goes here using u_ and p_
+```
+
+Above, `u_` and `p_` are numpy arrays build out of `u` and `p`, and so functions like `np.sum(u_)` will work.
+
+Also, note `lsoda` can be called within a jit-compiled numba function (see below). This makes it much faster than scipy if a program involves many integrations in a row.
 
 ```python
 @njit
