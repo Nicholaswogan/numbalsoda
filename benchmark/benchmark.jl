@@ -1,5 +1,5 @@
 
-using OrdinaryDiffEq, StaticArrays, BenchmarkTools, Sundials, LSODA
+using OrdinaryDiffEq, StaticArrays, BenchmarkTools, Sundials, LSODA, ModelingToolkit
 
 println("Lorenz")
 # Lorenz
@@ -31,7 +31,24 @@ function rober(du,u,p,t)
 end
 prob = ODEProblem(rober,[1.0,0.0,0.0],(0.0,1e5),[0.04,3e7,1e4]) 
 
-@btime solve(prob,Rosenbrock23(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 1.035 ms (4518 allocations: 250.12 KiB)
+@btime solve(prob,Rodas5(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 340.500 μs (633 allocations: 53.05 KiB)
 @btime solve(prob,TRBDF2(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 5.765 ms (11415 allocations: 524.14 KiB)
 @btime solve(prob,CVODE_BDF(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 1.115 ms (6954 allocations: 295.83 KiB)
 @btime solve(prob,lsoda(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 263.684 μs (2169 allocations: 185.09 KiB)
+
+# rober
+function rober(u,p,t)
+    y₁,y₂,y₃ = u
+    k₁,k₂,k₃ = p
+    du1 = -k₁*y₁+k₃*y₂*y₃
+    du2 =  k₁*y₁-k₂*y₂^2-k₃*y₂*y₃
+    du3 =  k₂*y₂^2
+    SA[du1,du2,du3]
+end
+ff = ODEFunction(rober,tgrad = (u,p,t)->SA[0.0,0.0,0.0])
+prob = ODEProblem{false}(rober,SA[1.0,0.0,0.0],(0.0,1e5),SA[0.04,3e7,1e4])
+@btime solve(prob,Rodas5(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 122.500 μs (581 allocations: 53.39 KiB)
+
+prob2 = ODEProblem{false}(modelingtoolkitize(prob),SA[1.0,0.0,0.0],(0.0,1e5),SA[0.04,3e7,1e4],jac=true)
+@btime solve(prob2,Rodas5(), reltol=1.0e-8, abstol=1.0e-8, saveat = 1000) # 75.000 μs (401 allocations: 51.38 KiB)
+
