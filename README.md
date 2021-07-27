@@ -5,12 +5,10 @@
 This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `NumbaLSODA` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `NumbaLSODA` a lot faster than scipy for most problems (see `benchmark` folder).
 
 ## Installation
-`NumbaLSODA` will probably only work on MacOS or Linux. You must have `CMake` and a C++ compiler. You must also have python >3.6.0 with `numpy` and `numba`.
-
-After satisfying the dependencies, install with the pip command below
+`NumbaLSODA` will only work on MacOS or Linux. Install with pip:
 
 ```
-python -m pip install git+git://github.com/Nicholaswogan/NumbaLSODA.git
+python -m pip install NumbaLSODA
 ```
 
 ## Basic usage

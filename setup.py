@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
     name="NumbaLSODA",
     packages=['NumbaLSODA'],
-    version='0.1.0',
+    version='0.1.3',
     license='MIT',
     install_requires=['numpy','numba'],
     author = 'Nicholas Wogan',
@@ -17,5 +17,7 @@ setup(
                   ' which can be called from within numba functions.',
     long_description=long_description,
     long_description_content_type='text/markdown',
+    python_requires='>3.6',
+    url = "https://github.com/Nicholaswogan/NumbaLSODA",
     cmake_args=['-DSKBUILD=ON']
     )
