@@ -12,7 +12,7 @@ endif()
 set(CMAKE_CXX_STANDARD 11)
 add_library(lsoda SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/LSODA.cpp
                          ${CMAKE_CURRENT_SOURCE_DIR}/src/wrapper.cpp)
-set_target_properties(lsoda PROPERTIES SUFFIX ".so")
+set_target_properties(lsoda PROPERTIES PREFIX "lib")
 
 if (SKBUILD)
   install(TARGETS lsoda DESTINATION NumbaLSODA)
