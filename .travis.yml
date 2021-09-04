@@ -1,0 +1,16 @@
+sudo: required
+dist: focal
+
+language: python
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install build-essential
+  - sudo apt-get install gcc
+
+install:
+  - pip install .
+  - cd tests
+
+script:
+  - python test.py
