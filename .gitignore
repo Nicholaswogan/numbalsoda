@@ -7,3 +7,4 @@ Photo.run
 *.mod
 build
 *.a
+*.dylib
