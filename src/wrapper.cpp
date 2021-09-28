@@ -28,8 +28,7 @@ void lsoda_wrapper(void (*rhs)(double t, double *u, double *du, void *data),
   double tout;
   
   for (int i = 1; i < nt; i++){
-    if (teval[i] <= teval[i-1]){
-      // std::cout << "Problem" << std::endl;
+    if (teval[i] < teval[i-1]){
       *success = 0;
       return;
     }
