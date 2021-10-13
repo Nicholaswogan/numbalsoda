@@ -62,3 +62,15 @@ def test_sp():
     return sol
 sol = test_sp() # this does not work :(
 ```
+
+## Passing data to the right-hand-side function
+
+In the examples shown above, we passed a an single array of floats to the right-hand-side function:
+
+```python
+# ...
+data = np.array([1.0])
+usol, success = lsoda(funcptr, u0, t_eval, data = data)
+```
+
+However, sometimes you might want to pass more data types than just floats. For example, you might want to pass several integers, an array of floats, and an array of integers. This is possible, but a little tricky. The notebook `passing_data_to_rhs_function.ipynb` gives an example that explains how.

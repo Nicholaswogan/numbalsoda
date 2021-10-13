@@ -39,5 +39,12 @@ def lsoda(funcptr, u0, t_eval, data = np.array([0.0], np.float64), rtol = 1.0e-3
         success_ = False
     return usol, success_
     
-# [nb.types.Array(nb.float64, 2, "C")(nb.int32, nb.types.Array(nb.float64, 1, "C"),
- # nb.types.Array(nb.float64, 1, "C"), nb.types.Array(nb.float64, 1, "C"), nb.float64, nb.float64)]
+@nb.extending.intrinsic
+def address_as_void_pointer(typingctx, src):
+    """ returns a void pointer from a given memory address """
+    from numba import types 
+    from numba.core import cgutils
+    sig = types.voidptr(src)
+    def codegen(cgctx, builder, sig, args):
+        return builder.inttoptr(args[0], cgutils.voidptr_t)
+    return sig, codegen
