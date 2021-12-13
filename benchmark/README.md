@@ -14,8 +14,8 @@ Also, Scipy might be faster than NumbaLSODA for stiff problems with > ~500 ODEs 
 | Scipy LSODA  | 595.029 ms  | 174x                   |
 | Scipy RK45   | 1744.073 ms | 510x                   |
 | Scipy DOP853 | 1052.442 ms | 308x                   |
-| Julia Tsit5  | 2.612 ms    | 0.76x                  |
-| Julia Vern8  | 1.803 ms    | 0.53x                  |
+| Julia Tsit5  | 1.340 ms    | 0.39x                  |
+| Julia Vern8  | 1.803 ms    | 0.21x                  |
 
 ## Stiff (Rober)
 
@@ -25,9 +25,9 @@ Also, Scipy might be faster than NumbaLSODA for stiff problems with > ~500 ODEs 
 | Scipy LSODA        | 26.483 ms  | 120x                   |
 | Scipy BDF          | 158.911 ms | 719x                   |
 | Scipy Radau        | 167.977 ms | 760x                   |
-| Julia TRBDF2       | 5.765 ms   | 26.08x                 |
-| Julia CVODE_BDF    | 1.115 ms   | 5.045x                 |
-| Julia LSODA        | 0.264 ms   | 1.194x                 |
-| Julia Rodas5       | 0.762 ms   | 3.45x                  |
-| Julia Rodas5 + StaticArrays | 0.173 ms   | 0.78x                 |
-| Julia Rodas5 + StaticArrays + Analytical Jacobian       | 0.113 ms   | 0.511x                 |
+| Julia TRBDF2       | 2.202 ms   | 9.96x                 |
+| Julia CVODE_BDF    | 0.628 ms   | 2.84x                 |
+| Julia LSODA        | 0.254 ms   | 1.15x                 |
+| Julia Rodas5       | 0.227 ms   | 1.03x                  |
+| Julia Rodas5 + StaticArrays | 0.0423 ms   | 0.19x                 |
+| Julia Rodas5 + StaticArrays + Analytical Jacobian       | 0.0420 ms ms   | 0.19x                 |
