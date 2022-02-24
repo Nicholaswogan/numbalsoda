@@ -14,8 +14,8 @@ Also, Scipy might be faster than numbalsoda for stiff problems with > ~500 ODEs 
 | Scipy LSODA  | 595.029 ms  | 174x                   |
 | Scipy RK45   | 1744.073 ms | 510x                   |
 | Scipy DOP853 | 1052.442 ms | 308x                   |
-| Julia Tsit5  | 2.612 ms    | 0.76x                  |
-| Julia Vern8  | 1.803 ms    | 0.53x                  |
+| Julia Tsit5  | 1.340 ms    | 0.39x                  |
+| Julia Vern8  | 1.803 ms    | 0.21x                  |
 
 ## Stiff (Rober)
 
