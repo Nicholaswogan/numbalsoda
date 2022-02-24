@@ -1,10 +1,10 @@
 import numpy as np
-from NumbaLSODA import lsoda_sig, lsoda
+from numbalsoda import lsoda_sig, lsoda
 from scipy.integrate import solve_ivp
 import timeit
 import numba as nb
 
-# NumbaLSODA
+# numbalsoda
 @nb.cfunc(lsoda_sig,boundscheck=False)
 def f_nb(t, u_, du_, p_):
     u = nb.carray(u_, (3,))
@@ -56,7 +56,7 @@ t_nb = timeit.Timer(time_nb).timeit(number=iters)/iters*1e3
 t_sp_LSODA = timeit.Timer(time_sp_LSODA).timeit(number=iters)/iters*1e3
 t_sp_RK45 = timeit.Timer(time_sp_RK45).timeit(number=iters)/iters*1e3
 t_sp_DOP853 = timeit.Timer(time_sp_DOP853).timeit(number=iters)/iters*1e3
-print("NumbaLSODA time =",'%.3f'%t_nb,'ms') # 3.421 ms
+print("numbalsoda time =",'%.3f'%t_nb,'ms') # 3.421 ms
 print("Scipy LSODA time =",'%.3f'%t_sp_LSODA,'ms') # 595.029 ms
 print("Scipy RK45 time =",'%.3f'%t_sp_RK45,'ms') # 1744.073 ms
 print("Scipy DOP853 time =",'%.3f'%t_sp_DOP853,'ms') # 1052.442 ms

@@ -1,20 +1,20 @@
-# NumbaLSODA
+# numbalsoda
 
-`NumbaLSODA` is a python wrapper to the LSODA method in [ODEPACK](https://computing.llnl.gov/projects/odepack), which is for solving ordinary differential equation initial value problems. LSODA was originally written in Fortran. `NumbaLSODA` is a wrapper to a C++ re-write of the original code: https://github.com/dilawar/libsoda 
+`numbalsoda` is a python wrapper to the LSODA method in [ODEPACK](https://computing.llnl.gov/projects/odepack), which is for solving ordinary differential equation initial value problems. LSODA was originally written in Fortran. `numbalsoda` is a wrapper to a C++ re-write of the original code: https://github.com/dilawar/libsoda 
 
-This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `NumbaLSODA` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `NumbaLSODA` a lot faster than scipy for most problems (see `benchmark` folder).
+This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `numbalsoda` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `numbalsoda` a lot faster than scipy for most problems (see `benchmark` folder).
 
 ## Installation
-`NumbaLSODA` should work on Windows, Linux, or MacOS. Install with pip:
+`numbalsoda` should work on Windows, Linux, or MacOS. Install with pip:
 
 ```
-python -m pip install NumbaLSODA
+python -m pip install numbalsoda
 ```
 
 ## Basic usage
 
 ```python
-from NumbaLSODA import lsoda_sig, lsoda
+from numbalsoda import lsoda_sig, lsoda
 from numba import njit, cfunc
 import numpy as np
 

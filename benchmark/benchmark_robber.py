@@ -1,4 +1,4 @@
-from NumbaLSODA import lsoda_sig, lsoda
+from numbalsoda import lsoda_sig, lsoda
 import numba as nb
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -36,7 +36,7 @@ funcptr = f_nb.address
 usol_nb, success = lsoda(funcptr, u0, t_eval, args, rtol=rtol, atol=atol)
 
 if not np.all(np.isclose(usol_sp.y.T,usol_nb)):
-    print("Scipy and NumbaLSODA solutions DO NOT match!!!\n")
+    print("Scipy and numbalsoda solutions DO NOT match!!!\n")
     
 @nb.njit(boundscheck=False)
 def time_nb():
@@ -62,7 +62,7 @@ t_sp_LSODA = timeit.Timer(time_sp_LSODA).timeit(number=iters)/iters*1e3
 t_sp_BDF = timeit.Timer(time_sp_BDF).timeit(number=iters)/iters*1e3
 t_sp_Radau = timeit.Timer(time_sp_Radau).timeit(number=iters)/iters*1e3
 
-print("NumbaLSODA time =",'%.3f'%t_nb,'ms') # 0.221 ms
+print("numbalsoda time =",'%.3f'%t_nb,'ms') # 0.221 ms
 print("Scipy LSODA time =",'%.3f'%t_sp_LSODA,'ms') # 26.483 ms
 print("Scipy BDF time =",'%.3f'%t_sp_BDF,'ms') # 158.911 ms
 print("Scipy Radau time =",'%.3f'%t_sp_Radau,'ms') # 167.977 ms

@@ -1,4 +1,4 @@
-from NumbaLSODA import lsoda_sig, lsoda
+from numbalsoda import lsoda_sig, lsoda
 from numba import njit, cfunc
 import numpy as np
 

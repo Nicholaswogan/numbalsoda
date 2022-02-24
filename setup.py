@@ -6,9 +6,9 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name="NumbaLSODA",
-    packages=['NumbaLSODA'],
-    version='0.1.7',
+    name="numbalsoda",
+    packages=['numbalsoda'],
+    version='0.2.0',
     license='MIT',
     install_requires=['numpy','numba'],
     author = 'Nicholas Wogan',
@@ -18,6 +18,6 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     python_requires='>3.6',
-    url = "https://github.com/Nicholaswogan/NumbaLSODA",
+    url = "https://github.com/Nicholaswogan/numbalsoda",
     cmake_args=['-DSKBUILD=ON']
     )

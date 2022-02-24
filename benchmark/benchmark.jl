@@ -1,5 +1,5 @@
 
-using OrdinaryDiffEq, StaticArrays, BenchmarkTools, Sundials, LSODA, ModelingToolkit
+using OrdinaryDiffEq, StaticArrays, BenchmarkTools, Sundials, ModelingToolkit
 
 println("Lorenz")
 # Lorenz
@@ -35,7 +35,6 @@ prob = ODEProblem(rober,[1.0,0.0,0.0],(0.0,1e5),[0.04,3e7,1e4])
 @btime solve(prob,Rodas5(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 761.578 μs (633 allocations: 53.05 KiB)
 @btime solve(prob,TRBDF2(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 5.765 ms (11415 allocations: 524.14 KiB)
 @btime solve(prob,CVODE_BDF(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 1.115 ms (6954 allocations: 295.83 KiB)
-@btime solve(prob,lsoda(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 263.684 μs (2169 allocations: 185.09 KiB)
 
 # rober
 function rober_static(u,p,t)

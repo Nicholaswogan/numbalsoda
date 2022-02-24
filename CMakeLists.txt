@@ -17,7 +17,7 @@ add_library(lsoda SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/LSODA.cpp
 set_target_properties(lsoda PROPERTIES PREFIX "lib")
 
 if (SKBUILD)
-  install(TARGETS lsoda DESTINATION NumbaLSODA)
+  install(TARGETS lsoda DESTINATION numbalsoda)
 else()
-  install(TARGETS lsoda DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/NumbaLSODA/)
+  install(TARGETS lsoda DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
 endif()
