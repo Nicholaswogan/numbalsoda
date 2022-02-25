@@ -5,8 +5,11 @@
 This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `numbalsoda` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `numbalsoda` a lot faster than scipy for most problems (see `benchmark` folder).
 
 ## Installation
-`numbalsoda` should work on Windows, Linux, or MacOS. Install with pip:
-
+Conda:
+```
+conda install -c conda-forge numbalsoda
+```
+Pip:
 ```
 python -m pip install numbalsoda
 ```
