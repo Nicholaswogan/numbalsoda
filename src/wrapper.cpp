@@ -9,9 +9,10 @@ extern "C"
     
 void lsoda_wrapper(void (*rhs)(double t, double *u, double *du, void *data),
                    int neq, double* u0, void* data, int nt, double* teval,
-                   double* usol, double rtol, double atol, int* success){
+                   double* usol, double rtol, double atol, int mxstep, int* success){
   
-  LSODA lsoda;  
+  LSODA lsoda;
+  lsoda.mxstep = mxstep;
   std::vector<double> y;
   std::vector<double> yout;
   int istate = 1;

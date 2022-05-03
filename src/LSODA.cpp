@@ -44,6 +44,8 @@ LSODA::LSODA()
     el = {{0}};
     cm1 = {{0}};
     cm2 = {{0}};
+    
+    mxstep = 500;
 }
 
 LSODA::~LSODA() {}
@@ -394,7 +396,7 @@ void LSODA::lsoda(LSODA_ODE_SYSTEM_TYPE f, const size_t neq, vector<double> &y,
         if (iopt == 0)
         {
             ixpr = 0;
-            mxstep = mxstp0;
+            // mxstep = mxstp0;
             mxhnil = mxhnl0;
             hmxi = 0.;
             hmin = 0.;

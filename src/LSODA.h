@@ -125,7 +125,10 @@ private:
     size_t meth_;
 
     size_t n, nq, nst, nfe, nje, nqu;
-    size_t mxstep, mxhnil;
+  public:
+    size_t mxstep;
+  private:
+    size_t mxhnil;
     size_t nslast, nhnil, ntrep, nyh;
 
     double ccmax, el0, h_ = .0;

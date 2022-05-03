@@ -1,5 +1,5 @@
 import numpy as np
-from numbalsoda import lsoda_sig, lsoda
+from numbalsoda import lsoda_sig, lsoda, dop853
 from scipy.integrate import solve_ivp
 import timeit
 import numba as nb
@@ -36,6 +36,10 @@ usol_nb, success = lsoda(funcptr, u0, t_eval, args, rtol=rtol, atol=atol)
 @nb.njit(boundscheck=False)
 def time_nb():
     usol_nb, success = lsoda(funcptr, u0, t_eval, args, rtol=rtol, atol=atol)  
+    
+@nb.njit(boundscheck=False)
+def time_dop853():
+    usol_nb, success = dop853(funcptr, u0, t_eval, args, rtol=rtol, atol=atol)  
 
 def time_sp_LSODA():
     usol_sp = solve_ivp(f_sp, tspan, u0, t_eval = t_eval, args=args_tuple, rtol=rtol, atol=atol, method='LSODA')
@@ -48,15 +52,18 @@ def time_sp_DOP853():
 
 # time
 time_nb()
+time_dop853()
 time_sp_LSODA()
 time_sp_RK45()
 time_sp_DOP853()
 iters = 10
 t_nb = timeit.Timer(time_nb).timeit(number=iters)/iters*1e3
+t_dop853 = timeit.Timer(time_dop853).timeit(number=iters)/iters*1e3
 t_sp_LSODA = timeit.Timer(time_sp_LSODA).timeit(number=iters)/iters*1e3
 t_sp_RK45 = timeit.Timer(time_sp_RK45).timeit(number=iters)/iters*1e3
 t_sp_DOP853 = timeit.Timer(time_sp_DOP853).timeit(number=iters)/iters*1e3
-print("numbalsoda time =",'%.3f'%t_nb,'ms') # 3.421 ms
+print("numbalsoda lsoda time =",'%.3f'%t_nb,'ms') # 3.421 ms
+print("numbalsoda dop853 time =",'%.3f'%t_dop853,'ms') # 1.354 ms
 print("Scipy LSODA time =",'%.3f'%t_sp_LSODA,'ms') # 595.029 ms
 print("Scipy RK45 time =",'%.3f'%t_sp_RK45,'ms') # 1744.073 ms
 print("Scipy DOP853 time =",'%.3f'%t_sp_DOP853,'ms') # 1052.442 ms
