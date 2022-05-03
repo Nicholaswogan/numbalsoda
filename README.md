@@ -2,7 +2,9 @@
 
 `numbalsoda` is a python wrapper to the LSODA method in [ODEPACK](https://computing.llnl.gov/projects/odepack), which is for solving ordinary differential equation initial value problems. LSODA was originally written in Fortran. `numbalsoda` is a wrapper to a C++ re-write of the original code: https://github.com/dilawar/libsoda 
 
-This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `numbalsoda` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `numbalsoda` a lot faster than scipy for most problems (see `benchmark` folder).
+`numbalsoda` also wraps the `dop853` explicit Runge-Kutta method from this repository: https://github.com/jacobwilliams/dop853
+
+This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'` or `method = DOP853`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `numbalsoda` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `numbalsoda` a lot faster than scipy for most problems, and achieves similar performance to Julia's DifferentialEquations.jl in some cases (see `benchmark` folder).
 
 ## Installation
 Conda:
@@ -17,7 +19,7 @@ python -m pip install numbalsoda
 ## Basic usage
 
 ```python
-from numbalsoda import lsoda_sig, lsoda
+from numbalsoda import lsoda_sig, lsoda, dop853
 from numba import njit, cfunc
 import numpy as np
 
@@ -31,7 +33,12 @@ u0 = np.array([5.,0.8]) # Initial conditions
 data = np.array([1.0]) # data you want to pass to rhs (data == p in the rhs).
 t_eval = np.linspace(0.0,50.0,1000) # times to evaluate solution
 
+# integrate with lsoda method
 usol, success = lsoda(funcptr, u0, t_eval, data = data)
+
+# integrate with dop853 method
+usol1, success1 = dop853(funcptr, u0, t_eval, data = data)
+
 # usol = solution
 # success = True/False
 ```
@@ -76,4 +83,23 @@ data = np.array([1.0])
 usol, success = lsoda(funcptr, u0, t_eval, data = data)
 ```
 
-However, sometimes you might want to pass more data types than just floats. For example, you might want to pass several integers, an array of floats, and an array of integers. This is possible, but a little tricky. The notebook `passing_data_to_rhs_function.ipynb` gives an example that explains how.
+However, sometimes you might want to pass more data types than just floats. For example, you might want to pass several integers, an array of floats, and an array of integers. One way to achieve this is with generating the `cfunc` using a function like this:
+
+```python
+def make_lsoda_func(param1, param2, param3):
+    @cfunc(lsoda_sig)
+    def rhs(t, x, du, p):
+        # Here param1, param2, and param3
+        # can be accessed.
+        du[0] = param1*t
+        # etc...
+    return rhs
+    
+rhs = make_lsoda_func(10.0, 5, 10000)
+funcptr = rhs.address
+# etc...
+```
+
+The only drawback of this approach is if you want to do many successive integrations where the parameters change because it would required re-compiling the `cfunc` between each integration. This could be slow.
+
+But! It is possible to pass arbitrary parameters without re-compiling the `cfunc`, but it is a little tricky. The notebook `passing_data_to_rhs_function.ipynb` gives an example that explains how.
