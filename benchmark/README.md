@@ -8,27 +8,25 @@ Also, Scipy might be faster than numbalsoda for stiff problems with > ~500 ODEs 
 
 ## Non-stiff (Lorenz)
 
-|                   | Time        | Relative to numbalsoda |
-| ----------------- | ----------- | ---------------------- |
-| numbalsoda lsoda  | 3.421 ms    | 1x                     |
-| numbalsoda dop853 | 1.354 ms    | 0.40x                  |
-| Scipy LSODA       | 595.029 ms  | 174x                   |
-| Scipy RK45        | 1744.073 ms | 510x                   |
-| Scipy DOP853      | 1052.442 ms | 308x                   |
-| Julia Tsit5       | 1.340 ms    | 0.39x                  |
-| Julia Vern8       | 1.803 ms    | 0.53x                  |
+|                            | Time       | Relative to numbalsoda |
+| -------------------------- | ---------- | ---------------------- |
+| numbalsoda lsoda           | 2.594 ms   | 1x                     |
+| numbalsoda dop853          | 0.700 ms   | 0.27x                  |
+| Scipy LSODA                | 109.349 ms | 42x                    |
+| Scipy RK45                 | 292.826 ms | 113x                   |
+| Scipy DOP853               | 180.997 ms | 70x                    |
+| Julia Tsit5 + StaticArrays | 1.597 ms   | 0.62x                  |
+| Julia Vern8 + StaticArrays | 0.899 ms   | 0.35x                  |
 
 ## Stiff (Rober)
 
-|                                                   | Time       | Relative to numbalsoda |
-| ------------------------------------------------- | ---------- | ---------------------- |
-| numbalsoda                                        | 0.221 ms   | 1x                     |
-| Scipy LSODA                                       | 26.483 ms  | 120x                   |
-| Scipy BDF                                         | 158.911 ms | 719x                   |
-| Scipy Radau                                       | 167.977 ms | 760x                   |
-| Julia TRBDF2                                      | 5.765 ms   | 26.08x                 |
-| Julia CVODE_BDF                                   | 1.115 ms   | 5.045x                 |
-| Julia LSODA                                       | 0.264 ms   | 1.194x                 |
-| Julia Rodas5                                      | 0.762 ms   | 3.45x                  |
-| Julia Rodas5 + StaticArrays                       | 0.173 ms   | 0.78x                  |
-| Julia Rodas5 + StaticArrays + Analytical Jacobian | 0.113 ms   | 0.511x                 |
+|                             | Time     | Relative to numbalsoda |
+| --------------------------- | -------- | ---------------------- |
+| numbalsoda                  | 0.128 ms | 1x                     |
+| Scipy LSODA                 | 4.805 ms | 38x                    |
+| Scipy BDF                   | 27.25 ms | 213x                   |
+| Scipy Radau                 | 28.34 ms | 221x                   |
+| Julia TRBDF2                | 1.524 ms | 11.9x                  |
+| Julia CVODE_BDF             | 0.466 ms | 3.6x                   |
+| Julia Rodas5                | 0.155 ms | 1.2x                   |
+| Julia Rodas5 + StaticArrays | 0.053 ms | 0.41x                  |

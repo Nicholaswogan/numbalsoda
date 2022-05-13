@@ -1,5 +1,5 @@
 
-using OrdinaryDiffEq, StaticArrays, BenchmarkTools, LSODA, Sundials, ModelingToolkit
+using OrdinaryDiffEq, StaticArrays, BenchmarkTools, Sundials, ModelingToolkit
 
 println("Lorenz")
 # Lorenz
@@ -15,8 +15,8 @@ u0 = SA[1.0,0.0,0.0]
 p  = SA[10.0,28.0,8/3]
 tspan = (0.0,100.0)
 prob = ODEProblem(lorenz_static,u0,tspan,p)
-@btime solve(prob,Tsit5(),saveat=0.1,reltol=1.0e-8,abstol=1.0e-8) # 1.340 ms (27 allocations: 64.55 KiB)
-@btime solve(prob,Vern8(),saveat=0.1,reltol=1.0e-8,abstol=1.0e-8); # 718.000 μs (28 allocations: 71.52 KiB)
+@btime solve(prob,Tsit5(),saveat=0.1,reltol=1.0e-8,abstol=1.0e-8)
+@btime solve(prob,Vern8(),saveat=0.1,reltol=1.0e-8,abstol=1.0e-8); 
 
 println("\nRober")
 # rober
@@ -32,10 +32,9 @@ function rober(du,u,p,t)
 end
 prob = ODEProblem(rober,[1.0,0.0,0.0],(0.0,1e5),[0.04,3e7,1e4])
 
-@btime solve(prob,Rodas5(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 227.200 μs (1288 allocations: 52.56 KiB)
-@btime solve(prob,TRBDF2(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 2.202 ms (3424 allocations: 194.41 KiB)
-@btime solve(prob,CVODE_BDF(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 627.500 μs (7183 allocations: 214.33 KiB)
-@btime solve(prob,lsoda(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 254.400 μs (2370 allocations: 127.09 KiB)
+@btime solve(prob,Rodas5(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000)
+@btime solve(prob,TRBDF2(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) 
+@btime solve(prob,CVODE_BDF(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) 
 
 # rober
 function rober_static(u,p,t)
@@ -47,7 +46,7 @@ function rober_static(u,p,t)
     SA[du1,du2,du3]
 end
 prob = ODEProblem{false}(rober_static,SA[1.0,0.0,0.0],(0.0,1e5),SA[0.04,3e7,1e4])
-@btime solve(prob,Rodas5(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000) # 42.300 μs (29 allocations: 9.75 KiB)
+@btime solve(prob,Rodas5(),reltol=1.0e-8,abstol=1.0e-8, saveat = 1000)
 
 function rober_jac(u,p,t)
   y₁,y₂,y₃ = u
@@ -68,4 +67,4 @@ end
 
 ff = ODEFunction(rober_static, jac=rober_jac)
 prob2 = ODEProblem{false}(ff,SA[1.0,0.0,0.0],(0.0,1e5),SA[0.04,3e7,1e4])
-@btime solve(prob2,Rodas5(), reltol=1.0e-8, abstol=1.0e-8, saveat = 1000); # 42.000 μs (30 allocations: 9.70 KiB)
+@btime solve(prob2,Rodas5(), reltol=1.0e-8, abstol=1.0e-8, saveat = 1000); 
