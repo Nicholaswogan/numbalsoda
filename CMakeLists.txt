@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION "3.14")
 
-project(lsoda LANGUAGES Fortran CXX)
+project(lsoda LANGUAGES CXX C)
+
+include(CMakeDetermineFortranCompiler)
+enable_language(Fortran)
+include(FortranCInterface)
 
 option(SKBUILD "Should be ON of being build by skbuild, 
 and OFF of being build by regular cmake" OFF)
