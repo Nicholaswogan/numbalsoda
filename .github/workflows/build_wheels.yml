@@ -51,9 +51,9 @@ jobs:
           python -m pip install pytest
 
       - name: install numbalsoda
+        working-directory: ${{github.workspace}}
         run: python -m pip install . -v
 
       - name: test numbalsoda
         working-directory: ${{github.workspace}}/tests
         run: pytest
-        
