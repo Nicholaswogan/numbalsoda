@@ -26,8 +26,6 @@ add_library(dop853_mod
   src/dop853_module.f90
 )
 add_library(dop853 SHARED
-  src/dop853_constants.f90
-  src/dop853_module.f90
   src/dop853_c_interface.f90
 )
 set_target_properties(dop853 PROPERTIES PREFIX "lib")
