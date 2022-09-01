@@ -75,7 +75,7 @@ contains
   end subroutine
 
   subroutine find_root(dop, d, xold, x, ind)
-    use brent, only: brent_class
+    use brent_mod, only: brent_class
     type(dop853_class), intent(inout) :: dop
     type(dop853_data), intent(inout) :: d
     real(dp), intent(in) :: xold
@@ -264,6 +264,8 @@ contains
       d%success = .false.
       d%message = 'Integrator failed to initialize.'
       len_message = len(d%message)
+      nt_out = 0
+      n_events_found = 0
       return
     endif
 
@@ -285,7 +287,7 @@ contains
     endif
 
     d%n_events = n_events
-    if (n_events > 0) then
+    if (n_events > 0 .and. c_associated(events_fcn)) then
       d%events_given = .true.
       call c_f_procpointer(events_fcn, d%events_fcn)
     else
@@ -320,6 +322,8 @@ contains
       d%success = .false.
       d%message = 'Failed to complete integration.'
       len_message = len(d%message)
+      nt_out = size(d%t)
+      n_events_found = 0
       return
     endif
 
@@ -361,8 +365,8 @@ contains
 
   end subroutine
 
-  subroutine dop853_solve_ivp_result(d_p, neq, len_message, nt_out, message, success, nfev, t, y, ind_event, t_event, y_event) &
-    bind(c,name="dop853_solve_ivp_result")
+  subroutine dop853_solve_ivp_result(d_p, neq, len_message, nt_out, message, success, nfev, t, y, &
+    event_found, ind_event, t_event, y_event) bind(c,name="dop853_solve_ivp_result")
     type(c_ptr), value, intent(in) :: d_p
     integer(c_int), value, intent(in) :: neq
     integer(c_int), value, intent(in) :: len_message
@@ -372,6 +376,7 @@ contains
     integer(c_int), intent(out) :: nfev
     real(c_double), intent(out) :: t(nt_out)
     real(c_double), intent(out) :: y(neq,nt_out)
+    logical(c_bool), intent(out) :: event_found
     integer(c_int), intent(out) :: ind_event
     real(c_double), intent(out) :: t_event
     real(c_double), intent(out) :: y_event(neq)
@@ -386,7 +391,9 @@ contains
     nfev = d%nfev
     t(:) = d%t(:)
     y(:,:) = d%y(:,:)
+    event_found = .false.
     if (allocated(d%t_event)) then
+      event_found = .true.
       ind_event = d%ind_event - 1 ! convert to python indexing
       t_event = d%t_event
       y_event(:) = d%y_event(:)
