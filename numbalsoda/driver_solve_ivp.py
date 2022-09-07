@@ -215,7 +215,7 @@ def _solve_ivp(funcptr, t_span, y0, t_eval, method, \
     )
 
     message = ''.join([chr(z) for z in message_])
-    return ODEResult(message, nfev.item(), success, t, y, event_found, ind_event, t_event, y_event)
+    return ODEResult(message[:-1], nfev.item(), success, t, y, event_found, ind_event, t_event, y_event)
 
 
 
