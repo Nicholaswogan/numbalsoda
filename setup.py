@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
     name="numbalsoda",
     packages=['numbalsoda'],
-    version='0.3.3',
+    version='0.3.4',
     license='MIT',
     install_requires=['numpy','numba'],
     author = 'Nicholas Wogan',

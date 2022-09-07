@@ -11,6 +11,7 @@ module dop853_solve_ivp
   type :: dop853_data
     ! input
     procedure(rhs_function), pointer, nopass :: rhs_fcn => NULL()
+    logical :: integrate_forward
     real(dp), pointer :: t_span(:)
     logical :: t_eval_given
     logical :: events_given
@@ -169,30 +170,37 @@ contains
 
     ! save the solution
     if (d%t_eval_given) then
-      if (nr == 1) then
-        xout = d%t(1)
-        d%nt = 1
+      if (nr == 1) return
+      
+      if (allocated(d%t_event)) then
+        xx = d%t_event
       else
-
-        if (allocated(d%t_event)) then
-          xx = d%t_event
-        else
-          xx = x
-        endif
-
-        do while (d%t(d%nt) <= xx .and. d%nt <= size(d%t))
-          do i = 1,size(y)
-            d%y(i,d%nt) = me%contd8(i, d%t(d%nt))
+        xx = x
+      endif
+      if (d%integrate_forward) then
+        if (d%nt <= size(d%t)) then
+          do while (d%t(d%nt) <= xx)
+            do i = 1,size(y)
+              d%y(i,d%nt) = me%contd8(i, d%t(d%nt))
+            enddo
+            d%nt = d%nt + 1
+            if (d%nt > size(d%t)) exit
           enddo
-          d%nt = d%nt + 1
-        enddo
-        if (d%nt <= size(d%t) .and. .not.d%events_given) then
-          xout = d%t(d%nt)
+        endif
+      else
+        if (d%nt <= size(d%t)) then
+          do while (d%t(d%nt) >= xx)
+            do i = 1,size(y)
+              d%y(i,d%nt) = me%contd8(i, d%t(d%nt))
+            enddo
+            d%nt = d%nt + 1
+            if (d%nt > size(d%t)) exit
+          enddo
         endif
       endif
     else
       ! save every step
-      if (.not. allocated(d%t_event) .and. (x >= d%t_span(1) .and. x <= d%t_span(2))) then
+      if (.not. allocated(d%t_event)) then
         d%t = [d%t, x]
         d%y = reshape(d%y,shape=[size(y),size(d%y,2)+1], pad=y)
       endif
@@ -272,6 +280,11 @@ contains
     dop%d => d
 
     d%t_span => t_span
+    if (t_span(2) >= t_span(1)) then
+      d%integrate_forward = .true.
+    else
+      d%integrate_forward = .false.
+    endif
     call c_f_procpointer(rhs_fcn_c, d%rhs_fcn)
     d%neq = neq
 
@@ -280,6 +293,29 @@ contains
       allocate(d%t(nt))
       allocate(d%y(neq,nt))
       d%t(:) = teval(:)
+      if (d%integrate_forward) then
+        do i = 2,nt
+          if (teval(i) < teval(i-1)) then
+            d%success = .false.
+            d%message = '"t_eval" does not always increase or decrease'
+            len_message = len(d%message)
+            nt_out = 0
+            n_events_found = 0
+            return
+          endif
+        enddo
+      else
+        do i = 2,nt
+          if (teval(i) > teval(i-1)) then
+            d%success = .false.
+            d%message = '"t_eval" does not always increase or decrease'
+            len_message = len(d%message)
+            nt_out = 0
+            n_events_found = 0
+            return
+          endif
+        enddo
+      endif
     else
       d%t_eval_given = .false.
       allocate(d%t(0))
@@ -294,15 +330,7 @@ contains
       d%events_given = .false.
     endif
 
-    if (d%t_eval_given .and. d%events_given) then
-      iout = 2 ! call solout every step
-    elseif (d%t_eval_given .and. .not.d%events_given) then
-      iout = 3 ! call solout at a specified time
-    elseif (.not.d%t_eval_given .and. d%events_given) then
-      iout = 2 ! call solout every step
-    elseif (.not.d%t_eval_given .and. .not.d%events_given) then
-      iout = 2 ! call solout every step
-    endif
+    iout = 2
 
     d%data_ptr = data_ptr
 
