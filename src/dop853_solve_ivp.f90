@@ -363,7 +363,8 @@ contains
       n_events_found = 1
       d%message = 'A termination event occurred.'
 
-      if (d%t_eval_given) then; block
+      if (d%t_eval_given) then
+      block
         real(dp), allocatable :: t_tmp(:), y_tmp(:,:)
         ! trim the results
         nt_out = d%nt - 1
@@ -381,7 +382,8 @@ contains
         d%t(:) = t_tmp(:)
         d%y(:,:) = y_tmp(:,:)
 
-      endblock; endif
+      endblock
+      endif
       
     else
       n_events_found = 0
