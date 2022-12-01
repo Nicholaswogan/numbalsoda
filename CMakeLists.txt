@@ -41,12 +41,20 @@ add_library(solve_ivp SHARED
 set_target_properties(solve_ivp PROPERTIES PREFIX "lib")
 target_link_libraries(solve_ivp dop853_mod)
 
+# RK 56 Merson
+add_library(rk_merson SHARED
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/RK_merson_wrapper.cpp
+)
+set_target_properties(rk_merson PROPERTIES PREFIX "lib")
+
 if (SKBUILD)
   install(TARGETS lsoda DESTINATION numbalsoda)
   install(TARGETS dop853 DESTINATION numbalsoda)
   install(TARGETS solve_ivp DESTINATION numbalsoda)
+  install(TARGETS rk_merson DESTINATION numbalsoda)
 else()
   install(TARGETS lsoda DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
   install(TARGETS dop853 DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
   install(TARGETS solve_ivp DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
+  install(TARGETS rk_merson DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
 endif()
