@@ -9,59 +9,82 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <iostream>
 #include <vector>
 
-struct RK45 {
-    static const int n_stages = 6;
-    const std::array<double, n_stages> rk_merson_nodes = {0.0, (1.0/3.0), (1.0/3.0), 0.5, 1.0};
-    const std::array<double, n_stages> rk_merson_weights = {(1.0/6.0), 0.0, 0.0, 2.0*(1.0/3.0), (1.0/6.0)};
-    const std::array<double, n_stages> rk_merson_starweights = {0.5, 0.0, -3.0*0.5, 2.0, 0.0};
-    const std::array<std::array<double, n_stages>, n_stages> rk_merson_matrix = {
-        0.0, 0.0, 0.0, 0.0, 0.0,
-        (1.0/3.0), 0.0, 0.0, 0.0, 0.0,
-        (1.0/6.0), (1.0/6.0), 0.0, 0.0, 0.0,
-        (1.0/8.0), 0.0, (3.0/8.0), 0.0, 0.0,
-        0.5, 0.0, -1.5, 2.0, 0.0
-    };
-};
+#include "RK45.h"
 
 extern "C"
 {
 
 /**
- * @brief ODE solver based on Merson's Runge-Kutta 5(6) integrator.
- * @details This method implements Merson's Runge-Kutta 5(6) method with adaptive time-stepping
- * to solve an ODE.
+ * @brief ODE solver based on Runge-Kutta-Fehlberg 5(4) method.
+ * @details This method implements the Runge-Kutta-Fehlberg 5(4) time integrator with adaptive
+ * timestepping to solve an ODE.
  * 
  * @param rhs Pointer to the method to compute the right hand side of the ODE.
  * @param neq Number of equations and unknowns
- * @param data Extra data to be passed down to the RHS.
- * @param t0 Initial time.
  * @param u0 Initial solution/guess.
+ * @param data Extra data to be passed down to the RHS.
+ * @param dt0 Initial time step, optional
+ * @param t0 Initial time.
  * @param tf Final time
  * @param itf Maximum number of iterations
+ * @param usol Vector holding the solution at a given instant.
  * @param rtol Relative tolerance for the integration.
  * @param atol Absolute tolerance for the integration.
- * @param dt0 Initial time step, optional
- * @param usol Vector holding the solution at a given instant.
+ * @param mxstep Maximum allowed step size.
  * @param success Boolean indicating whether integration was successful or errored.
  */
-void rk_merson_wrapper(
-                       void (*rhs)(double t, double *u, double *du, void* data),
-                       int neq,
-                       void* data,
-                       double t0,
-                       double* u0,
-                       double tf,
-                       int itf,
-                       double rtol,
-                       double atol,
-                       double dt0,
-                       double* usol,
-                       int* success
+void rk45_wrapper(
+                  void (*rhs)(double t, double *u, double *du, void* data),
+                  int neq,
+                  double* u0,
+                  void* data,
+                  double dt0,
+                  double t0,
+                  double tf,
+                  int itf,
+                  double* usol,
+                  double rtol,
+                  double atol,
+                  double mxstep,
+                  int* success,
+                  double* actual_final_time,
+                  int* actual_final_iteration
 )
 {
+    std::vector<double> y0(neq, double(0));
+    for (auto i = 0; i < neq; i++) {
+        y0[i] = u0[i];
+    }
 
-} // end void rk_merson_wrapper(...)
+    RK45 rk45(rhs, t0, y0, tf, mxstep, rtol, atol, dt0);
+
+    int itnum = 1;
+    while (itnum < itf + 1) {
+        bool successful_step = rk45.step();
+
+        if (not successful_step) {
+            *success = 0;
+            return;
+        }
+
+        for (auto i = 0; i < neq; i++) {
+            usol[i + (itnum - 1) * neq] = rk45.m_y[i];
+        }
+
+        if (rk45.m_direction * (rk45.m_t - rk45.m_t_bound) >= 0) {
+            break;
+        }
+
+        itnum += 1;
+    }
+
+    *actual_final_time = rk45.m_t;
+    *actual_final_iteration = itnum;
+    *success = 1;
+
+} // end void rk45_wrapper(...)
 
 } // end extern "C"
