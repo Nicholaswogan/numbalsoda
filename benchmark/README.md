@@ -12,6 +12,7 @@ Also, Scipy might be faster than numbalsoda for stiff problems with > ~500 ODEs 
 | -------------------------- | ---------- | ---------------------- |
 | numbalsoda lsoda           | 2.594 ms   | 1x                     |
 | numbalsoda dop853          | 0.700 ms   | 0.27x                  |
+| numbalsoda rk45            | 5.785 ms   | 2.23x
 | Scipy LSODA                | 109.349 ms | 42x                    |
 | Scipy RK45                 | 292.826 ms | 113x                   |
 | Scipy DOP853               | 180.997 ms | 70x                    |

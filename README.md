@@ -4,7 +4,7 @@
 
 `numbalsoda` also wraps the `dop853` explicit Runge-Kutta method from this repository: https://github.com/jacobwilliams/dop853
 
-This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'` or `method = DOP853`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `numbalsoda` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `numbalsoda` a lot faster than scipy for most problems, and achieves similar performance to Julia's DifferentialEquations.jl in some cases (see `benchmark` folder).
+This package is very similar to `scipy.integrate.solve_ivp` ([see here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)), when you set `method = 'LSODA'`, `method = DOP853` or `method = RK45`. But, `scipy.integrate.solve_ivp` invokes the python interpreter every time step which can be slow. Also, `scipy.integrate.solve_ivp` can not be used within numba jit-compiled python functions. In contrast, `numbalsoda` never invokes the python interpreter during integration and can be used within a numba compiled function which makes `numbalsoda` a lot faster than scipy for most problems, and achieves similar performance to Julia's DifferentialEquations.jl in some cases (see `benchmark` folder).
 
 ## Installation
 Conda:
@@ -19,7 +19,7 @@ python -m pip install numbalsoda
 ## Basic usage
 
 ```python
-from numbalsoda import lsoda_sig, lsoda, dop853
+from numbalsoda import lsoda_sig, lsoda, dop853, rk45
 from numba import njit, cfunc
 import numpy as np
 
@@ -38,6 +38,9 @@ usol, success = lsoda(funcptr, u0, t_eval, data = data)
 
 # integrate with dop853 method
 usol1, success1 = dop853(funcptr, u0, t_eval, data = data)
+
+# integrate with rk45 method (automatic adaptive time stepping)
+tsol2, usol2, tf2, success2 = rk45(funcptr, u0, -1.0, np.amin(t_eval), np.amax(t_eval), 100000, data = data)
 
 # usol = solution
 # success = True/False
