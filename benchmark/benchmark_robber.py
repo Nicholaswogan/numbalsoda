@@ -1,4 +1,4 @@
-from numbalsoda import lsoda_sig, lsoda
+from numbalsoda import lsoda_sig, lsoda, rk45
 import numba as nb
 import numpy as np
 from scipy.integrate import solve_ivp

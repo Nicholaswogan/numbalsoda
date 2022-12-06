@@ -30,6 +30,7 @@
  * algorithm is proportional to 'step_size ** (order + 1)'.
  * @param rtol Desired relative tolerance.
  * @param atol Desired absolute tolerance.
+ * @param rhs_args Extra parameters to pass to the RHS function.
  * @return double Absolute value of the suggested initial step.
  */
 double select_initial_step(
@@ -40,7 +41,8 @@ double select_initial_step(
     int direction,
     int order,
     double rtol,
-    double atol
+    double atol,
+    void *const rhs_args
 )
 {
     int n_eqns = y0.size();
@@ -68,7 +70,7 @@ double select_initial_step(
     for (auto i = 0; i < n_eqns; i++) {
         y1[i] = y0[i] + h0 * direction * f0[i];
     }
-    fun(t0 + h0 * direction, y1.data(), f1.data(), NULL);
+    fun(t0 + h0 * direction, y1.data(), f1.data(), rhs_args);
     double d2 = 0.0;
     for (auto i = 0; i < n_eqns; i++) {
         d2 += (f1[i] - f0[i]) / scale[i];
@@ -100,6 +102,7 @@ double select_initial_step(
  * @param C Coefficients for incrementing time for consecutive RK stages.
  * @param K Storage array for putting RK stages here. Stages are stored in rows. The last
  * row is a linear combination of the previous rows with coefficients.
+ * @param rhs_args Extra parameters to pass to the RHS function.
  * @return std::array<std::vector<double>, 2> Solution at t + h and derivative thereof.
  */
 std::array<std::vector<double>, 2> rk_step(
@@ -111,7 +114,8 @@ std::array<std::vector<double>, 2> rk_step(
     std::vector<std::vector<double>> const& A,
     std::vector<double> const& B,
     std::vector<double> const& C,
-    std::vector<std::vector<double>>& K
+    std::vector<std::vector<double>>& K,
+    void *const rhs_args
 )
 {
     int const n_eqns = y.size();
@@ -130,7 +134,7 @@ std::array<std::vector<double>, 2> rk_step(
         for (auto i = 0; i < n_eqns; i++) {
             dy[i] += y[i];
         }
-        fun(t + C[s] * h, dy.data(), K[s].data(), NULL);
+        fun(t + C[s] * h, dy.data(), K[s].data(), rhs_args);
     }
 
     std::vector<double> y_new(n_eqns, double(0)), f_new(n_eqns);
@@ -142,7 +146,7 @@ std::array<std::vector<double>, 2> rk_step(
     for (auto i = 0; i < n_eqns; i++) {
         y_new[i] += y[i];
     }
-    fun(t + h, y_new.data(), f_new.data(), NULL);
+    fun(t + h, y_new.data(), f_new.data(), rhs_args);
     for (auto i = 0; i < n_eqns; i++) {
         K[n_stages][i] = f_new[i];
     }
@@ -280,12 +284,14 @@ void dgemv(const std::string trans, const size_t m, const size_t n,
  * @param atol Absolute tolerance.
  * @param first_step Initial step size; default is "None" which means that the algorithm
  * should choose.
+ * @param rhs_args Extra parameters to pass to the RHS function.
  */
 RK45::RK45(RK45_ODE_SYSTEM_TYPE rhs_handle, double t0, std::vector<double> &y0, double tf,
            double largest_step,
            double _rtol,
            double _atol,
-           double first_step)
+           double first_step,
+           void *const rhs_args)
 {
     _m_status = "running";
     m_fun = rhs_handle;
@@ -307,7 +313,7 @@ RK45::RK45(RK45_ODE_SYSTEM_TYPE rhs_handle, double t0, std::vector<double> &y0, 
     m_y = y0;
     m_n_eqns = m_y.size();
     m_f.resize(m_n_eqns);
-    m_fun(m_t, m_y.data(), m_f.data(), NULL);
+    m_fun(m_t, m_y.data(), m_f.data(), rhs_args);
 
     if (largest_step <= double(0))
         throw std::invalid_argument("'largest_step' must be positive.");
@@ -317,7 +323,7 @@ RK45::RK45(RK45_ODE_SYSTEM_TYPE rhs_handle, double t0, std::vector<double> &y0, 
             throw std::invalid_argument("'first_step' exceeds bounds.");
         m_h_abs = first_step;
     } else {
-        m_h_abs = select_initial_step(m_fun, m_t, m_y, m_f, m_direction, _m_error_estimation_order, m_rtol, m_atol);
+        m_h_abs = select_initial_step(m_fun, m_t, m_y, m_f, m_direction, _m_error_estimation_order, m_rtol, m_atol, rhs_args);
     }
     _m_h_previous = -1.0;
 
@@ -371,9 +377,10 @@ double RK45::_estimate_error_norm(double h, std::vector<double> scale)
 /**
  * @brief Computations for one integration step.
  *
+ * @param rhs_args Extra parameters to pass to the RHS function.
  * @return bool Whether the step was successful.
  */
-bool RK45::step()
+bool RK45::step(void *const rhs_args)
 {
     double min_step = double(10) * std::numeric_limits<double>::epsilon();
     double h_abs;
@@ -403,7 +410,7 @@ bool RK45::step()
         h = t_new - m_t;
         h_abs = std::abs(h);
 
-        auto y_and_f_new = rk_step(m_fun, m_t, m_y, m_f, h, _m_A, _m_B, _m_C, _m_K);
+        auto y_and_f_new = rk_step(m_fun, m_t, m_y, m_f, h, _m_A, _m_B, _m_C, _m_K, rhs_args);
         y_new = y_and_f_new[0];
         f_new = y_and_f_new[1];
 

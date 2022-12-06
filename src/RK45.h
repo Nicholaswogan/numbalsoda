@@ -56,7 +56,8 @@ public:
          double largest_step=std::numeric_limits<double>::max(),
          double _rtol=1e-3,
          double _atol=1e-6,
-         double first_step=double(-1));
+         double first_step=double(-1),
+         void *const rhs_args=NULL);
     ~RK45();
 
     RK45_ODE_SYSTEM_TYPE m_fun;
@@ -72,7 +73,7 @@ public:
     double m_t;
     int m_direction;
 
-    bool step();
+    bool step(void *const rhs_args);
 
 private:
     static int const _m_order = 5;
@@ -94,7 +95,6 @@ private:
 
     double _m_h_previous;
     std::vector<std::vector<double>> _m_K;
-
     std::string _m_status;
 
     std::vector<double> _estimate_error(double h);

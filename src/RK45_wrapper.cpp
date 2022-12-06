@@ -61,7 +61,7 @@ void rk45_wrapper(
         y0[i] = u0[i];
     }
 
-    RK45 rk45(rhs, t0, y0, tf, mxstep, rtol, atol, dt0);
+    RK45 rk45(rhs, t0, y0, tf, mxstep, rtol, atol, dt0, data);
 
     for (auto i = 0; i < neq; i++) {
         usol[i + (0) * neq] = rk45.m_y[i];
@@ -70,7 +70,7 @@ void rk45_wrapper(
 
     int itnum = 1;
     while (itnum < itf + 1) {
-        bool successful_step = rk45.step();
+        bool successful_step = rk45.step(data);
 
         if (not successful_step) {
             *success = 0;
