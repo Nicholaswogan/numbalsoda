@@ -36,13 +36,14 @@ def test_rk45():
     dt0 = -1.0
     t0 = 0.0
     tf = 10.0
-    itf = 1000000
+    itf = 200
 
-    usol, _, success = rk45(
+    _, usol, actual_tf, success = rk45(
         funcptr, u0, dt0, t0, tf, itf, rtol=1.e-8, atol=1.e-8
     )
 
     assert success
+    assert np.isclose(actual_tf, tf)
     assert np.isclose(usol[-1,0], 0.38583246250193476)
     assert np.isclose(usol[-1,1], 4.602012234037773)
 

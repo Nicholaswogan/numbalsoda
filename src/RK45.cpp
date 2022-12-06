@@ -294,6 +294,7 @@ RK45::RK45(RK45_ODE_SYSTEM_TYPE rhs_handle, double t0, std::vector<double> &y0, 
     m_t_bound = tf;
     m_direction = (m_t_bound != t0) ? sgn(m_t_bound - t0) : 1;
 
+    m_rtol = _rtol;
     if (_rtol < 100 * std::numeric_limits<double>::epsilon()) {
         std::cout << "Warning: '_rtol' is too small. Setting to max(rtol, 100*EPS)." << std::endl;
         m_rtol = std::max(_rtol, 100 * std::numeric_limits<double>::epsilon());

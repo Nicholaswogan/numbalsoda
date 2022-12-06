@@ -31,6 +31,7 @@ extern "C"
  * @param tf Final time
  * @param itf Maximum number of iterations
  * @param usol Vector holding the solution at a given instant.
+ * @param tsol Vector holding the instants at which the solution has been evaluated.
  * @param rtol Relative tolerance for the integration.
  * @param atol Absolute tolerance for the integration.
  * @param mxstep Maximum allowed step size.
@@ -46,6 +47,7 @@ void rk45_wrapper(
                   double tf,
                   int itf,
                   double* usol,
+                  double* tsol,
                   double rtol,
                   double atol,
                   double mxstep,
@@ -61,6 +63,11 @@ void rk45_wrapper(
 
     RK45 rk45(rhs, t0, y0, tf, mxstep, rtol, atol, dt0);
 
+    for (auto i = 0; i < neq; i++) {
+        usol[i + (0) * neq] = rk45.m_y[i];
+    }
+    tsol[(0)] = rk45.m_t;
+
     int itnum = 1;
     while (itnum < itf + 1) {
         bool successful_step = rk45.step();
@@ -71,8 +78,9 @@ void rk45_wrapper(
         }
 
         for (auto i = 0; i < neq; i++) {
-            usol[i + (itnum - 1) * neq] = rk45.m_y[i];
+            usol[i + itnum * neq] = rk45.m_y[i];
         }
+        tsol[itnum] = rk45.m_t;
 
         if (rk45.m_direction * (rk45.m_t - rk45.m_t_bound) >= 0) {
             break;
