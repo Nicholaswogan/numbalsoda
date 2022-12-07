@@ -1,4 +1,4 @@
-from numbalsoda import lsoda_sig, lsoda, dop853, solve_ivp
+from numbalsoda import lsoda_sig, lsoda, rk45, dop853, solve_ivp
 from numba import njit, cfunc
 import numpy as np
 
@@ -30,6 +30,23 @@ def test_dop853():
     assert np.isclose(usol[-1,0], 0.38583246250193476)
     assert np.isclose(usol[-1,1], 4.602012234037773)
 
+def test_rk45():
+    u0 = np.array([5.,0.8])
+    data = np.array([1.0])
+    dt0 = -1.0
+    t0 = 0.0
+    tf = 10.0
+    itf = 200
+
+    _, usol, actual_tf, success = rk45(
+        funcptr, u0, dt0, t0, tf, itf, rtol=1.e-8, atol=1.e-8
+    )
+
+    assert success
+    assert np.isclose(actual_tf, tf)
+    assert np.isclose(usol[-1,0], 0.38583246250193476)
+    assert np.isclose(usol[-1,1], 4.602012234037773)
+
 def test_solve_ivp_1():
     u0 = np.array([5.,0.8])
     data = np.array([1.0])
@@ -58,5 +75,6 @@ def test_solve_ivp_2():
 if __name__ == "__main__":
     test_lsoda()
     test_dop853()
+    test_rk45()
     test_solve_ivp_1()
     test_solve_ivp_2()

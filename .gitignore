@@ -8,3 +8,6 @@ Photo.run
 build
 *.a
 *.dylib
+_skbuild
+numbalsoda.egg-info
+.vscode

@@ -11,7 +11,7 @@ endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # lsoda
 add_library(lsoda SHARED 
@@ -41,12 +41,21 @@ add_library(solve_ivp SHARED
 set_target_properties(solve_ivp PROPERTIES PREFIX "lib")
 target_link_libraries(solve_ivp dop853_mod)
 
+# RKF 45
+add_library(rk45 SHARED
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/RK45.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/RK45_wrapper.cpp
+)
+set_target_properties(rk45 PROPERTIES PREFIX "lib")
+
 if (SKBUILD)
   install(TARGETS lsoda DESTINATION numbalsoda)
   install(TARGETS dop853 DESTINATION numbalsoda)
   install(TARGETS solve_ivp DESTINATION numbalsoda)
+  install(TARGETS rk45 DESTINATION numbalsoda)
 else()
   install(TARGETS lsoda DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
   install(TARGETS dop853 DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
   install(TARGETS solve_ivp DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
+  install(TARGETS rk45 DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/numbalsoda/)
 endif()
