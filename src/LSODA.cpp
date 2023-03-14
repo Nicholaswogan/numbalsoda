@@ -287,7 +287,7 @@ c-----------------------------------------------------------------------
 void LSODA::lsoda(LSODA_ODE_SYSTEM_TYPE f, const size_t neq, vector<double> &y,
                   double *t, double tout, int itask, int *istate, int iopt,
                   int jt, array<int, 7> &iworks, array<double, 4> &rworks,
-                  void *_data)
+                  void *_data, bool exit_on_warning)
 {
     assert(tout > *t);
 
@@ -828,6 +828,13 @@ void LSODA::lsoda(LSODA_ODE_SYSTEM_TYPE f, const size_t neq, vector<double> &y,
                     stderr,
                     "         such that in the machine, t + h_ = t on the next step\n");
                 fprintf(stderr, "         solver will continue anyway.\n");
+
+		if (exit_on_warning){
+			*istate =-2;
+      terminate2(y, t);
+			return;
+		}
+
                 if (nhnil == mxhnil)
                 {
                     cerr << "lsoda -- above warning has been issued " << nhnil
@@ -2240,7 +2247,7 @@ void LSODA::_freevectors(void)
 void LSODA::lsoda_update(LSODA_ODE_SYSTEM_TYPE f, const size_t neq,
                          vector<double> &y, vector<double> &yout, double *t,
                          const double tout, int *istate, void * _data,
-                         double rtol, double atol 
+                         double rtol, double atol, bool exit_on_warning
                         )
 {
     array<int, 7> iworks = {{0}};
@@ -2266,5 +2273,5 @@ void LSODA::lsoda_update(LSODA_ODE_SYSTEM_TYPE f, const size_t neq,
     for (size_t i = 1; i <= neq; i++)
         yout[i] = y[i - 1];
 
-    lsoda(f, neq, yout, t, tout, itask, istate, iopt, jt, iworks, rworks, _data);
+    lsoda(f, neq, yout, t, tout, itask, istate, iopt, jt, iworks, rworks, _data, exit_on_warning);
 }
