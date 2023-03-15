@@ -36,7 +36,7 @@ void lsoda_wrapper(void (*rhs)(double t, double *u, double *du, void *data),
     }
 
     tout = teval[i];
-    lsoda.lsoda_update(rhs, neq, y, yout, &t, tout, &istate, data, rtol, atol);
+    lsoda.lsoda_update(rhs, neq, y, yout, &t, tout, &istate, data, rtol, atol, exit_on_warning);
 
     if (istate <= 0){
       // there is a problem!

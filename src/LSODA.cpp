@@ -830,7 +830,7 @@ void LSODA::lsoda(LSODA_ODE_SYSTEM_TYPE f, const size_t neq, vector<double> &y,
                 fprintf(stderr, "         solver will continue anyway.\n");
 
 		if (exit_on_warning){
-			*istate =-2;
+			*istate = -2;
       terminate2(y, t);
 			return;
 		}
