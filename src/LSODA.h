@@ -61,7 +61,7 @@ public:
 
     void lsoda(LSODA_ODE_SYSTEM_TYPE f, const size_t neq, vector<double> &y,
                double *t, double tout, int itask, int *istate, int iopt, int jt,
-               array<int, 7> &iworks, array<double, 4> &rworks, void *_data);
+               array<int, 7> &iworks, array<double, 4> &rworks, void *_data, bool exit_on_warning);
 
     void correction(const size_t neq, vector<double> &y, LSODA_ODE_SYSTEM_TYPE f,
                     size_t *corflag, double pnorm, double *del, double *delp,
@@ -75,7 +75,8 @@ public:
     void lsoda_update(LSODA_ODE_SYSTEM_TYPE f, const size_t neq,
                       vector<double> &y, std::vector<double> &yout, double *t,
                       const double tout, int *istate, void *const _data,
-                      double rtol = 1e-6, double atol = 1e-6 // Tolerance
+                      double rtol = 1e-6, double atol = 1e-6, // Tolerance
+                      bool exit_on_warning = false
                      );
 
     void terminate(int *istate);
